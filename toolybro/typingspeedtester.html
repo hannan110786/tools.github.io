@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: background-color 0.3s ease;
+        }
+        .bg-gradient-header {
+            background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .tool-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .no-select {
+            user-select: none;
+        }
+        .correct-char {
+            color: #16a34a; /* Green-600 */
+        }
+        .incorrect-char {
+            color: #dc2626; /* Red-600 */
+            text-decoration: underline;
+        }
+        .blinking-cursor {
+            border-right: 2px solid #000;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #000;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-gradient-header text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">Typing Speed Test</h1>
+            <p class="text-lg sm:text-xl">Test your typing speed and accuracy!</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12 flex justify-center">
+        <div class="tool-card bg-white rounded-2xl p-8 w-full max-w-4xl text-center relative">
+
+            <div class="absolute top-4 right-4 text-sm font-semibold text-gray-600 space-x-4">
+                <span id="wpmDisplay">WPM: 0</span>
+                <span id="timeDisplay">Time: 0s</span>
+            </div>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Type the paragraph below</h2>
+            
+            <p id="paragraph" class="text-lg text-gray-700 mb-6 text-left leading-relaxed no-select"></p>
+            
+            <textarea id="input" 
+                class="w-full h-32 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none" 
+                placeholder="Start typing here..."
+                autofocus
+                onpaste="return false"></textarea>
+
+            <div id="result" class="mt-6 text-lg font-medium text-gray-700"></div>
+            <div id="record" class="mt-2 text-sm text-purple-600 font-semibold"></div>
+            
+            <button id="restartBtn" 
+                class="hidden mt-6 px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition">
+                🔄 Restart
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const paragraphs = [
+            "The digital revolution has fundamentally reshaped our daily lives, from how we communicate to how we work. It's a double-edged sword, offering unprecedented access to information and connection, while also presenting new challenges related to privacy, misinformation, and digital literacy. Navigating this new landscape requires a conscious effort to understand the tools we use and the impact they have on our society.",
+            "Artificial intelligence is no longer a concept confined to science fiction; it is an integral part of modern technology. Its applications range from simple voice assistants to complex medical diagnostics, demonstrating its potential to revolutionize industries. However, ethical considerations surrounding AI, such as bias and job displacement, must be addressed to ensure its development benefits all of humanity.",
+            "The art of storytelling is a timeless tradition that has evolved with technology. From ancient oral histories to modern digital media, stories have always been a way for us to make sense of the world and connect with one another. Whether through a novel, a film, or a video game, a compelling narrative can transport us to different realities and inspire us to see the world from a new perspective."
+        ];
+        
+        const paragraphEl = document.getElementById("paragraph");
+        const inputEl = document.getElementById("input");
+        const resultEl = document.getElementById("result");
+        const recordEl = document.getElementById("record");
+        const restartBtn = document.getElementById("restartBtn");
+        const wpmDisplay = document.getElementById("wpmDisplay");
+        const timeDisplay = document.getElementById("timeDisplay");
+
+        let currentParagraph = "";
+        let startTime;
+        let timerInterval;
+
+        function setRandomParagraph() {
+            currentParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+            paragraphEl.innerHTML = "";
+            currentParagraph.split('').forEach(char => {
+                const charSpan = document.createElement("span");
+                charSpan.textContent = char;
+                paragraphEl.appendChild(charSpan);
+            });
+            inputEl.value = "";
+            resultEl.textContent = "";
+            restartBtn.classList.add("hidden");
+            inputEl.disabled = false;
+            startTime = null;
+            wpmDisplay.textContent = "WPM: 0";
+            timeDisplay.textContent = "Time: 0s";
+            clearInterval(timerInterval);
+        }
+
+        function calculateWPM(timeInMinutes) {
+            const wordCount = currentParagraph.split(" ").length;
+            return Math.round(wordCount / timeInMinutes);
+        }
+
+        function updateDisplay() {
+            if (!startTime) return;
+            const now = new Date();
+            const timeInSeconds = Math.round((now - startTime) / 1000);
+            timeDisplay.textContent = `Time: ${timeInSeconds}s`;
+
+            if (timeInSeconds > 0) {
+                const timeInMinutes = timeInSeconds / 60;
+                const currentWPM = calculateWPM(timeInMinutes);
+                wpmDisplay.textContent = `WPM: ${currentWPM}`;
+            }
+        }
+
+        inputEl.addEventListener("keydown", (e) => {
+            if (!startTime && e.key.length === 1) { // Start timer on first valid key press
+                startTime = new Date();
+                timerInterval = setInterval(updateDisplay, 1000);
+            }
+        });
+
+        inputEl.addEventListener("input", () => {
+            const typedText = inputEl.value;
+            const paragraphSpans = paragraphEl.querySelectorAll('span');
+            
+            let correctCount = 0;
+            let totalTyped = typedText.length;
+
+            paragraphSpans.forEach((charSpan, index) => {
+                if (index < totalTyped) {
+                    if (typedText[index] === charSpan.textContent) {
+                        charSpan.className = 'correct-char';
+                        correctCount++;
+                    } else {
+                        charSpan.className = 'incorrect-char';
+                    }
+                } else {
+                    charSpan.className = '';
+                }
+            });
+
+            if (typedText === currentParagraph) {
+                const endTime = new Date();
+                const timeTaken = (endTime - startTime) / 1000 / 60;
+                const wpm = calculateWPM(timeTaken);
+                const accuracy = Math.round((correctCount / totalTyped) * 100);
+
+                resultEl.textContent = `✅ Completed! Your speed: ${wpm} WPM, Accuracy: ${accuracy}%`;
+
+                let bestRecord = localStorage.getItem("bestRecord");
+                if (!bestRecord || wpm > bestRecord) {
+                    localStorage.setItem("bestRecord", wpm);
+                    recordEl.textContent = `🏆 New Record: ${wpm} WPM!`;
+                } else {
+                    recordEl.textContent = `Best Record: ${bestRecord} WPM`;
+                }
+
+                inputEl.disabled = true;
+                restartBtn.classList.remove("hidden");
+                clearInterval(timerInterval);
+            }
+        });
+
+        restartBtn.addEventListener("click", setRandomParagraph);
+
+        // Initial setup
+        setRandomParagraph();
+        const bestRecord = localStorage.getItem("bestRecord");
+        if (bestRecord) recordEl.textContent = `Best Record: ${bestRecord} WPM`;
+    </script>
+
+</body>
+</html>
