@@ -1,118 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toolbox - Your One-Stop Tool Website</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-google.com, pub-4112532166547823, DIRECT, f08c47fec0942fa0
-  <meta name="hannanali4u2024@gmail.com" content="ca-pub-4112532166547823">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4112532166547823"
-     crossorigin="anonymous"></script>
-  <meta name="google-adsense-account" content="ca-pub-4112532166547823">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4112532166547823"
-     crossorigin="anonymous"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6;
-      transition: background-color 0.3s ease;
-    }
-    .bg-gradient-header {
-      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    .tool-card {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
-                  0 1px 3px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .tool-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1),
-                  0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox - Your One-Stop Tool Website</title>
+    <link rel="shortcut icon" type="x-icon" href="download.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: background-color 0.3s ease;
+        }
+        .bg-gradient-header {
+            background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .tool-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+                        0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1),
+                        0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 
-  <!-- Header -->
-  <header class="bg-gradient-header text-white py-16">
-    <div class="container mx-auto px-4 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold mb-4">The Ultimate Online Toolbox</h1>
-      <p class="text-lg sm:text-xl mb-8">Discover over 100+ free and powerful tools for your everyday needs.</p>
-      <div class="max-w-xl mx-auto">
-        <div class="relative">
-          <input type="text" id="searchInput" placeholder="Search for a tool..." class="w-full py-3 pl-12 pr-4 text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-300 ease-in-out placeholder-gray-500 shadow-md">
-          <svg class="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+    <header class="bg-gradient-header text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">The Ultimate Online Toolbox</h1>
+            <p class="text-lg sm:text-xl mb-8">Discover over 100+ free and powerful tools for your everyday needs.</p>
+            <div class="max-w-xl mx-auto">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Search for a tool..." class="w-full py-3 pl-12 pr-4 text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-300 ease-in-out placeholder-gray-500 shadow-md">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Tools Grid -->
-  <main class="container mx-auto px-4 py-12">
-    <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-  </main>
+    <main class="container mx-auto px-4 py-12">
+        <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </main>
 
-  <script>
-    const tools = [
-      { name: 'Word Counter', description: 'Count words, characters, and sentences.', icon: '<svg class="w-16 h-16 text-purple-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5h6m-6 9l2 2 4-4" /></svg>', link: 'typingspeedtester.html' },
-      { name: 'Image Resizer', description: 'Resize and crop your images online.', icon: '<svg class="w-16 h-16 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16" /></svg>', link: 'imgconv.html' },
-      { name: 'JSON Formatter', description: 'Format and beautify your JSON code.', icon: '<svg class="w-16 h-16 text-teal-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 20l4-16m4 4l4 4" /></svg>', link: 'fileconv.html' },
-      { name: 'QR Code Generator', description: 'Create and download QR codes.', icon: '<svg class="w-16 h-16 text-rose-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3" /></svg>', link: 'QRcode.html' },
-      { name: 'Unit Converter', description: 'Convert between units easily.', icon: '<svg class="w-16 h-16 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 10l-2 5-2-5" /></svg>', link: 'unitconv.html' },
-      { name: 'Currency Converter', description: 'Live 2025 currency exchange rates.', icon: '<svg class="w-16 h-16 text-green-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8v8m-4-4h8" /></svg>', link: 'currencyconv.html' },
-      { name: 'Image Compressor', description: 'Reduce file size of your images.', icon: '<svg class="w-16 h-16 text-lime-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="10" width="11" height="11" /></svg>', link: 'imagecomp.html' },
-      { name: 'Image to PDF', description: 'Convert images into PDF instantly.', icon: '<svg class="w-16 h-16 text-red-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="6" y="6" width="12" height="12" /></svg>', link: 'imgpdf.html' },
-      { name: 'Meme Maker', description: 'Create memes with custom text.', icon: '<svg class="w-16 h-16 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16v12H4z" /></svg>', link: 'mememaker.html' }
-    ];
+    <script>
+        const tools = [
+            { name: 'Word Counter', description: 'Count words, characters, and sentences.', icon: '<svg class="w-16 h-16 text-purple-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5h6m-6 9l2 2 4-4" /></svg>', link: 'typingspeedtester.html' },
+            { name: 'Image Resizer', description: 'Resize and crop your images online.', icon: '<svg class="w-16 h-16 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16" /></svg>', link: 'imgconv.html' },
+            { name: 'JSON Formatter', description: 'Format and beautify your JSON code.', icon: '<svg class="w-16 h-16 text-teal-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 20l4-16m4 4l4 4" /></svg>', link: 'fileconv.html' },
+            { name: 'QR Code Generator', description: 'Create and download QR codes.', icon: '<svg class="w-16 h-16 text-rose-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3" /></svg>', link: 'QRcode.html' },
+            { name: 'Unit Converter', description: 'Convert between units easily.', icon: '<svg class="w-16 h-16 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 10l-2 5-2-5" /></svg>', link: 'unitconv.html' },
+            { name: 'Currency Converter', description: 'Live 2025 currency exchange rates.', icon: '<svg class="w-16 h-16 text-green-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8v8m-4-4h8" /></svg>', link: 'currencyconv.html' },
+            { name: 'Image Compressor', description: 'Reduce file size of your images.', icon: '<svg class="w-16 h-16 text-lime-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="10" width="11" height="11" /></svg>', link: 'imagecomp.html' },
+            { name: 'Image to PDF', description: 'Convert images into PDF instantly.', icon: '<svg class="w-16 h-16 text-red-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="6" y="6" width="12" height="12" /></svg>', link: 'imgpdf.html' },
+            { name: 'Meme Maker', description: 'Create memes with custom text.', icon: '<svg class="w-16 h-16 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16v12H4z" /></svg>', link: 'mememaker.html' },
+            { name: 'Age Calculator', description: 'Calculate your age in years, months, and days.', icon: '<svg class="w-16 h-16 text-pink-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>', link: 'Agecalc.html' },
+            { name: 'Background Remover', description: 'Remove backgrounds from images instantly.', icon: '<svg class="w-16 h-16 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 16a2 2 0 11-4 0 2 2 0 014 0zM16 16a2 2 0 11-4 0 2 2 0 014 0z" /></svg>', link: 'bgremover.html' },
+            { name: 'BMI Calculator', description: 'Check your BMI to see if you are at a healthy weight.', icon: '<svg class="w-16 h-16 text-purple-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h4m-4-8h8m-1 12H8" /></svg>', link: 'BMIcalc.html' },
+            { name: 'Calendar', description: 'View the current calendar and dates.', icon: '<svg class="w-16 h-16 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>', link: 'calendar.html' },
+            { name: 'Coin Flip', description: 'Flip a coin for a quick decision.', icon: '<svg class="w-16 h-16 text-teal-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" /></svg>', link: 'coinflip.html' },
+            { name: 'CV Builder', description: 'Create and download a professional CV.', icon: '<svg class="w-16 h-16 text-rose-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h4m-4-8h8m-1 12H8" /></svg>', link: 'cvbuild.html' },
+            { name: 'Idea Generator', description: 'Generate creative ideas for any project.', icon: '<svg class="w-16 h-16 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 20h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" /></svg>', link: 'ideagenerator.html' },
+            { name: 'Password Manager', description: 'Securely store and manage your passwords.', icon: '<svg class="w-16 h-16 text-green-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 11a2 2 0 100-4 2 2 0 000 4zM12 21a2 2 0 100-4 2 2 0 000 4z" /></svg>', link: 'passmanager.html' },
+            { name: 'Peer Share', description: 'Share files directly with your peers.', icon: '<svg class="w-16 h-16 text-lime-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 10V8a2 2 0 012-2h4a2 2 0 012 2v2m-6 6v4m0 0a2 2 0 100 4 2 2 0 000-4z" /></svg>', link: 'peershare.html' },
+            { name: 'Percentage Calculator', description: 'Calculate percentages quickly and accurately.', icon: '<svg class="w-16 h-16 text-red-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19l9 2-9-18-9 18 9-2z" /></svg>', link: 'percalc.html' },
+            { name: 'Spin Wheel', description: 'A fun decision-making spin wheel.', icon: '<svg class="w-16 h-16 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 20a8 8 0 100-16 8 8 0 000 16z" /></svg>', link: 'spinwheel.html' },
+            { name: 'Watermark Adder', description: 'Add watermarks to your images.', icon: '<svg class="w-16 h-16 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h4m-4-8h8m-1 12H8" /></svg>', link: 'watermarkadder.html' },
+            { name: 'Dummy Text Generator', description: 'Generate placeholder text for your designs.', icon: '<svg class="w-16 h-16 text-purple-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h4m-4-8h8m-1 12H8" /></svg>', link: 'dummytext.html' },
+            { name: 'Encoder/Decoder', description: 'Encode and decode various text formats.', icon: '<svg class="w-16 h-16 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 20l4-16m4 4l4 4" /></svg>', link: 'encoder.html' },
+            { name: 'Image to Text Extractor', description: 'Extract text from any image.', icon: '<svg class="w-16 h-16 text-teal-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16" /></svg>', link: 'imgtoextrctr.html' },
+            { name: 'Logo Maker', description: 'Design a simple logo for your brand.', icon: '<svg class="w-16 h-16 text-rose-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3" /></svg>', link: 'logomaker.html' },
+            { name: 'Password Generator', description: 'Create strong, random passwords.', icon: '<svg class="w-16 h-16 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8v8m-4-4h8" /></svg>', link: 'pswrdgen.html' },
+            { name: 'Screen Recorder', description: 'Record your screen directly from the browser.', icon: '<svg class="w-16 h-16 text-green-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="10" width="11" height="11" /></svg>', link: 'scrnrcrdr.html' },
+            { name: 'Stopwatch', description: 'A simple, accurate stopwatch.', icon: '<svg class="w-16 h-16 text-lime-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="6" y="6" width="12" height="12" /></svg>', link: 'stpwtch.html' },
+            { name: 'Voice to Text', description: 'Convert spoken words into written text.', icon: '<svg class="w-16 h-16 text-red-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16v12H4z" /></svg>', link: 'voice2txt.html' },
+            { name: 'Word Counter', description: 'Count the number of words, characters, and sentences.', icon: '<svg class="w-16 h-16 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16v12H4z" /></svg>', link: 'wordcounter.html' },
+            { name: 'World Clock', description: 'Check the time in different time zones.', icon: '<svg class="w-16 h-16 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 20a8 8 0 100-16 8 8 0 000 16z" /></svg>', link: 'worldclock.html' }
+        ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const searchInput = document.getElementById('searchInput');
-      const toolGrid = document.getElementById('toolGrid');
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const toolGrid = document.getElementById('toolGrid');
 
-      const renderTools = (filteredTools) => {
-        toolGrid.innerHTML = '';
-        filteredTools.forEach(tool => {
-          const card = document.createElement('a');
-          card.href = tool.link;
-          card.className = 'tool-card bg-white rounded-xl p-6 flex flex-col items-center text-center';
-          card.innerHTML = `
-            ${tool.icon}
-            <h2 class="text-xl font-semibold text-gray-800 mb-2">${tool.name}</h2>
-            <p class="text-gray-500 text-sm">${tool.description}</p>
-          `;
-          toolGrid.appendChild(card);
+            const renderTools = (filteredTools) => {
+                toolGrid.innerHTML = '';
+                filteredTools.forEach(tool => {
+                    const card = document.createElement('a');
+                    card.href = tool.link;
+                    card.className = 'tool-card bg-white rounded-xl p-6 flex flex-col items-center text-center';
+                    card.innerHTML = `
+                        ${tool.icon}
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">${tool.name}</h2>
+                        <p class="text-gray-500 text-sm">${tool.description}</p>
+                    `;
+                    toolGrid.appendChild(card);
+                });
+            };
+
+            const filterTools = (query) => {
+                const lowerCaseQuery = query.toLowerCase();
+                return tools.filter(tool =>
+                    tool.name.toLowerCase().includes(lowerCaseQuery) ||
+                    tool.description.toLowerCase().includes(lowerCaseQuery)
+                );
+            };
+
+            // Initial render
+            renderTools(tools);
+
+            // Search
+            searchInput.addEventListener('input', (event) => {
+                const query = event.target.value;
+                renderTools(filterTools(query));
+            });
         });
-      };
-
-      const filterTools = (query) => {
-        const lowerCaseQuery = query.toLowerCase();
-        return tools.filter(tool =>
-          tool.name.toLowerCase().includes(lowerCaseQuery) ||
-          tool.description.toLowerCase().includes(lowerCaseQuery)
-        );
-      };
-
-      // Initial render
-      renderTools(tools);
-
-      // Search
-      searchInput.addEventListener('input', (event) => {
-        const query = event.target.value;
-        renderTools(filterTools(query));
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>
-
-
-
-
-
