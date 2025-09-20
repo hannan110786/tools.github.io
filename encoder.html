@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Cipher Encoder/Decoder</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: white;
+      color: #333;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      width: 90%;
+      max-width: 1100px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 90%;
+      max-width: 350px;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: #111;
+      font-size: 1rem;
+      text-align: center;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #111;
+      opacity: 0.7;
+    }
+
+    input:focus {
+      box-shadow: 0 0 10px #f39c12;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    /* Colorful buttons */
+    .encodeBtn {
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+    }
+
+    .encodeBtn:hover {
+      background: linear-gradient(135deg, #6c3483, #2e86c1);
+      transform: scale(1.05);
+    }
+
+    .decodeBtn {
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+    }
+
+    .decodeBtn:hover {
+      background: linear-gradient(135deg, #d68910, #c0392b);
+      transform: scale(1.05);
+    }
+
+    .copyBtn {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+
+    .copyBtn:hover {
+      background: linear-gradient(135deg, #1e8449, #28b463);
+      transform: scale(1.05);
+    }
+
+    .output {
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      width: 90%;
+      max-width: 350px;
+      min-height: 50px;
+      word-wrap: break-word;
+      text-align: center;
+      color: #111;
+    }
+
+    .notification {
+      display: none;
+      margin-top: 10px;
+      padding: 8px;
+      background: #27ae60;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Encoder -->
+    <div class="card">
+      <h2>Encoder</h2>
+      <input type="text" id="encodeMsg" placeholder="Type message">
+      <input type="number" id="encodeShift" value="3" min="1" max="25">
+      <button class="encodeBtn" onclick="encodeMessage()">Encode</button>
+      <div id="encodeOutput" class="output"></div>
+      <button class="copyBtn" onclick="copyText('encodeOutput','encodeNotif')">Copy</button>
+      <div id="encodeNotif" class="notification">Copied!</div>
+    </div>
+
+    <!-- Decoder -->
+    <div class="card">
+      <h2>Decoder</h2>
+      <input type="text" id="decodeMsg" placeholder="Paste encoded message">
+      <input type="number" id="decodeShift" value="3" min="1" max="25">
+      <button class="decodeBtn" onclick="decodeMessage()">Decode</button>
+      <div id="decodeOutput" class="output"></div>
+      <button class="copyBtn" onclick="copyText('decodeOutput','decodeNotif')">Copy</button>
+      <div id="decodeNotif" class="notification">Copied!</div>
+    </div>
+  </div>
+
+  <script>
+    function shiftCipher(text, shift, encode = true) {
+      let result = '';
+      for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char.match(/[a-z]/i)) {
+          let code = text.charCodeAt(i);
+          if (code >= 65 && code <= 90) {
+            char = String.fromCharCode(((code - 65 + (encode ? shift : -shift) + 26) % 26) + 65);
+          } else if (code >= 97 && code <= 122) {
+            char = String.fromCharCode(((code - 97 + (encode ? shift : -shift) + 26) % 26) + 97);
+          }
+        }
+        result += char;
+      }
+      return result;
+    }
+
+    function encodeMessage() {
+      const msg = document.getElementById('encodeMsg').value;
+      const shift = parseInt(document.getElementById('encodeShift').value);
+      const encoded = shiftCipher(msg, shift, true);
+      document.getElementById('encodeOutput').textContent = encoded;
+
+      // Autofill decoder input for convenience
+      document.getElementById('decodeMsg').value = encoded;
+    }
+
+    function decodeMessage() {
+      const msg = document.getElementById('decodeMsg').value;
+      const shift = parseInt(document.getElementById('decodeShift').value);
+      const decoded = shiftCipher(msg, shift, false);
+      document.getElementById('decodeOutput').textContent = decoded;
+    }
+
+    function copyText(outputId, notifId) {
+      const text = document.getElementById(outputId).textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const notif = document.getElementById(notifId);
+        notif.style.display = 'block';
+        setTimeout(() => notif.style.display = 'none', 1500);
+      });
+    }
+  </script>
+</body>
+</html>

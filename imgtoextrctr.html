@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image to Text Extractor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+    <div class="bg-white rounded-2xl p-8 space-y-6">
+      <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">✨ Image to Text Extractor ✨</h1>
+
+      <!-- Drop zone -->
+      <div id="dropZone" class="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center cursor-pointer hover:border-pink-500 hover:bg-pink-50 transition duration-200">
+        <p class="text-gray-600">📂 Drag & drop an image here or click to select</p>
+        <input id="imageInput" type="file" accept="image/*" class="hidden" />
+      </div>
+
+      <!-- Image preview -->
+      <div id="previewContainer" class="hidden">
+        <p class="text-sm text-gray-600 mb-2">🖼️ Preview:</p>
+        <img id="imagePreview" src="" class="max-h-64 rounded-md border border-gray-300 shadow-md" />
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+        <button id="extractBtn" class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">Extract Text</button>
+        <button id="copyBtn" class="bg-gradient-to-r from-blue-400 to-indigo-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md hidden">Copy Text</button>
+        <button id="clearBtn" class="bg-gradient-to-r from-red-400 to-pink-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">Clear</button>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="text-center hidden animate-pulse text-yellow-600 font-semibold">⏳ Processing image...</div>
+
+      <!-- Output -->
+      <textarea id="outputText" rows="10" readonly placeholder="Extracted text will appear here..." class="w-full bg-gray-100 text-gray-900 p-3 rounded-lg resize-none focus:outline-none border border-gray-300"></textarea>
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const imageInput = document.getElementById("imageInput");
+    const imagePreview = document.getElementById("imagePreview");
+    const previewContainer = document.getElementById("previewContainer");
+    const extractBtn = document.getElementById("extractBtn");
+    const outputText = document.getElementById("outputText");
+    const loading = document.getElementById("loading");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    // Trigger input when drop zone clicked
+    dropZone.addEventListener("click", () => imageInput.click());
+
+    // Handle file select
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (file) showPreview(file);
+    });
+
+    // Handle drag & drop
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("border-pink-500", "bg-pink-50");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("border-pink-500", "bg-pink-50");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("border-pink-500", "bg-pink-50");
+
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        imageInput.files = e.dataTransfer.files;
+        showPreview(file);
+      }
+    });
+
+    // Show image preview
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        imagePreview.src = reader.result;
+        previewContainer.classList.remove("hidden");
+        outputText.value = "";
+        copyBtn.classList.add("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Extract text from image
+    extractBtn.addEventListener("click", async () => {
+      const file = imageInput.files[0];
+      if (!file) {
+        alert("Please upload an image first.");
+        return;
+      }
+
+      loading.classList.remove("hidden");
+      outputText.value = "";
+
+      try {
+        const result = await Tesseract.recognize(file, 'eng', {
+          logger: m => console.log(m)
+        });
+
+        // Clean extracted text (remove weird symbols)
+        let cleanedText = result.data.text.replace(/[^\x20-\x7E\n]/g, "");
+
+        outputText.value = cleanedText.trim();
+        copyBtn.classList.remove("hidden");
+      } catch (err) {
+        outputText.value = "❌ Failed to extract text. Try a clearer image.";
+        console.error(err);
+      }
+
+      loading.classList.add("hidden");
+    });
+
+    // Copy to clipboard
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(outputText.value);
+      copyBtn.textContent = "Copied! ✅";
+      setTimeout(() => {
+        copyBtn.textContent = "Copy Text";
+      }, 2000);
+    });
+
+    // Clear everything
+    clearBtn.addEventListener("click", () => {
+      imageInput.value = "";
+      previewContainer.classList.add("hidden");
+      outputText.value = "";
+      copyBtn.classList.add("hidden");
+    });
+  </script>
+</body>
+</html>

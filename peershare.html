@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer-to-Peer Sharer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tool-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .gradient-header {
+            background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <!-- Header -->
+    <header class="gradient-header text-white text-center py-16 mb-8 rounded-xl tool-card">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-2">Peer-to-Peer Sharer</h1>
+        <p class="text-lg sm:text-xl">Share text and files with devices on the same network, without a backend.</p>
+    </header>
+
+    <main class="container mx-auto max-w-6xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Connection Panel -->
+            <div class="lg:w-1/3 bg-white p-6 rounded-xl tool-card flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Connection</h2>
+                    <p class="text-gray-600 mb-4">To connect, one person creates a session and shares the ID. The other person enters the same ID to join.</p>
+                    
+                    <div class="space-y-4">
+                        <input type="text" id="sessionId" class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300" placeholder="Enter session ID">
+                        <div class="flex gap-2">
+                            <button id="createSessionBtn" class="flex-1 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 transition-colors">Create Session</button>
+                            <button id="joinSessionBtn" class="flex-1 px-4 py-2 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700 transition-colors">Join Session</button>
+                        </div>
+                    </div>
+
+                    <div id="statusMessage" class="mt-4 text-center font-medium"></div>
+
+                    <div class="mt-6 border-t pt-4">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">Shared ID</h3>
+                        <div class="bg-gray-100 p-4 rounded-md">
+                            <p id="displayedSessionId" class="text-sm text-gray-600 break-all"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <p class="text-sm text-gray-500 text-center">
+                        Powered by WebRTC, a direct peer-to-peer connection is established once connected. This tool does not use a central server for sharing data.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sharing Panels -->
+            <div class="lg:w-2/3 flex flex-col gap-6">
+
+                <!-- Text Sharing -->
+                <div class="bg-white p-6 rounded-xl tool-card">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Text Sharing</h2>
+                    <textarea id="textInput" class="w-full h-32 p-3 border rounded-md focus:ring-2 focus:ring-indigo-300" placeholder="Enter text to share..."></textarea>
+                    <div class="flex justify-between items-center mt-4">
+                        <button id="sendTextBtn" class="px-6 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition-colors" disabled>Send Text</button>
+                        <p id="textStatus" class="text-sm text-gray-500"></p>
+                    </div>
+                    <div id="receivedText" class="mt-4 p-3 bg-gray-100 rounded-md break-words whitespace-pre-wrap">
+                        No text received yet.
+                    </div>
+                </div>
+
+                <!-- File Sharing -->
+                <div class="bg-white p-6 rounded-xl tool-card">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">File Sharing</h2>
+                    <div id="dropArea" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center transition-colors duration-200 hover:border-indigo-500 hover:bg-gray-50 cursor-pointer">
+                        <p class="text-gray-500">Drag & drop files here, or click to browse</p>
+                        <input type="file" id="fileInput" multiple class="hidden">
+                    </div>
+                    
+                    <div id="fileList" class="mt-4 space-y-2">
+                        <!-- File items will be added dynamically -->
+                    </div>
+                    
+                    <div class="mt-4" id="fileStatus"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sessionIdInput = document.getElementById('sessionId');
+            const createSessionBtn = document.getElementById('createSessionBtn');
+            const joinSessionBtn = document.getElementById('joinSessionBtn');
+            const displayedSessionId = document.getElementById('displayedSessionId');
+            const statusMessage = document.getElementById('statusMessage');
+            const textInput = document.getElementById('textInput');
+            const sendTextBtn = document.getElementById('sendTextBtn');
+            const receivedTextDiv = document.getElementById('receivedText');
+            const dropArea = document.getElementById('dropArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const fileStatusDiv = document.getElementById('fileStatus');
+            const textStatus = document.getElementById('textStatus');
+            
+            // WebRTC Configuration - Google's public STUN server is used for discovery
+            const configuration = {
+                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            };
+
+            let peerConnection = null;
+            let dataChannel = null;
+            const CHUNK_SIZE = 16 * 1024; // 16 KB
+            let fileBuffer = [];
+            let receivedFileInfo = null;
+
+            // Simple "server" to exchange IDs, which could be replaced by a real signaling server
+            const signalingServer = new EventTarget();
+
+            createSessionBtn.onclick = async () => {
+                const sessionId = Math.random().toString(36).substring(2, 9);
+                sessionIdInput.value = sessionId;
+                displayedSessionId.textContent = sessionId;
+                statusMessage.textContent = 'Session created. Share this ID with a partner.';
+                await createPeerConnection(true, sessionId);
+            };
+
+            joinSessionBtn.onclick = async () => {
+                const sessionId = sessionIdInput.value.trim();
+                if (!sessionId) {
+                    statusMessage.textContent = 'Please enter a session ID.';
+                    statusMessage.classList.remove('text-green-500', 'text-red-500');
+                    statusMessage.classList.add('text-yellow-500');
+                    return;
+                }
+                displayedSessionId.textContent = sessionId;
+                statusMessage.textContent = 'Attempting to join session...';
+                await createPeerConnection(false, sessionId);
+            };
+
+            async function createPeerConnection(isCreator, sessionId) {
+                peerConnection = new RTCPeerConnection(configuration);
+
+                peerConnection.onicecandidate = ({ candidate }) => {
+                    if (candidate) {
+                        signalingServer.dispatchEvent(new CustomEvent('candidate', { detail: { candidate, sessionId } }));
+                    }
+                };
+
+                peerConnection.onconnectionstatechange = () => {
+                    if (peerConnection.connectionState === 'connected') {
+                        statusMessage.textContent = 'Connection established!';
+                        statusMessage.classList.remove('text-yellow-500', 'text-red-500');
+                        statusMessage.classList.add('text-green-500');
+                        sendTextBtn.disabled = false;
+                    } else if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
+                        statusMessage.textContent = 'Connection failed or disconnected.';
+                        statusMessage.classList.remove('text-green-500', 'text-yellow-500');
+                        statusMessage.classList.add('text-red-500');
+                        sendTextBtn.disabled = true;
+                    }
+                };
+
+                if (isCreator) {
+                    dataChannel = peerConnection.createDataChannel('fileAndTextChannel');
+                    setupDataChannelListeners(dataChannel);
+                    const offer = await peerConnection.createOffer();
+                    await peerConnection.setLocalDescription(offer);
+                    signalingServer.dispatchEvent(new CustomEvent('offer', { detail: { offer, sessionId } }));
+                } else {
+                    peerConnection.ondatachannel = (event) => {
+                        dataChannel = event.channel;
+                        setupDataChannelListeners(dataChannel);
+                    };
+                    // Simplified signaling for joining: listen for the offer and then send an answer
+                    signalingServer.addEventListener('offer', async (event) => {
+                        if (event.detail.sessionId === sessionId && !peerConnection.remoteDescription) {
+                            await peerConnection.setRemoteDescription(new RTCSessionDescription(event.detail.offer));
+                            const answer = await peerConnection.createAnswer();
+                            await peerConnection.setLocalDescription(answer);
+                            signalingServer.dispatchEvent(new CustomEvent('answer', { detail: { answer, sessionId } }));
+                        }
+                    });
+                }
+                
+                // Simplified signaling: handle answers and candidates
+                signalingServer.addEventListener('answer', async (event) => {
+                    if (event.detail.sessionId === sessionId && peerConnection.localDescription && !peerConnection.remoteDescription) {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(event.detail.answer));
+                    }
+                });
+                signalingServer.addEventListener('candidate', async (event) => {
+                    if (event.detail.sessionId === sessionId && event.detail.candidate) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(event.detail.candidate));
+                    }
+                });
+            }
+
+            function setupDataChannelListeners(channel) {
+                channel.onopen = () => {
+                    console.log('Data channel opened!');
+                    statusMessage.textContent = 'Connected! You can now share.';
+                };
+                channel.onclose = () => {
+                    console.log('Data channel closed.');
+                    statusMessage.textContent = 'Connection lost.';
+                };
+                channel.onmessage = async (event) => {
+                    const data = event.data;
+                    try {
+                        const message = JSON.parse(data);
+                        if (message.type === 'text') {
+                            receivedTextDiv.textContent = message.content;
+                            textStatus.textContent = 'Text received!';
+                            setTimeout(() => textStatus.textContent = '', 2000);
+                        } else if (message.type === 'file-info') {
+                            receivedFileInfo = message;
+                            fileBuffer = [];
+                            fileStatusDiv.innerHTML = `<p class="text-blue-500">Receiving file: <strong>${receivedFileInfo.filename}</strong> (${(receivedFileInfo.size / 1024 / 1024).toFixed(2)} MB)</p>`;
+                        } else if (message.type === 'file-chunk') {
+                            fileBuffer.push(message.chunk);
+                            const progress = (fileBuffer.length * CHUNK_SIZE / receivedFileInfo.size) * 100;
+                            fileStatusDiv.innerHTML = `<div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progress}%"></div></div><p class="mt-1 text-sm text-gray-500">Receiving: ${progress.toFixed(0)}%</p>`;
+                            if (fileBuffer.length * CHUNK_SIZE >= receivedFileInfo.size) {
+                                // All chunks received, reassemble the file
+                                const receivedData = fileBuffer.join('');
+                                const blob = base64toBlob(receivedData, receivedFileInfo.mime);
+                                const url = URL.createObjectURL(blob);
+                                const fileItem = document.createElement('div');
+                                fileItem.className = 'flex items-center justify-between bg-gray-50 p-4 rounded-lg';
+                                fileItem.innerHTML = `
+                                    <span class="text-gray-700">${receivedFileInfo.filename}</span>
+                                    <a href="${url}" download="${receivedFileInfo.filename}" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600">Download</a>
+                                `;
+                                fileList.appendChild(fileItem);
+                                fileBuffer = [];
+                                receivedFileInfo = null;
+                                fileStatusDiv.innerHTML = `<p class="text-green-500 mt-2">File received successfully!</p>`;
+                                setTimeout(() => fileStatusDiv.textContent = '', 2000);
+                            }
+                        }
+                    } catch (e) {
+                        // This handles non-JSON messages, i.e., file chunks.
+                        fileBuffer.push(data);
+                        const progress = (fileBuffer.length * CHUNK_SIZE / receivedFileInfo.size) * 100;
+                        fileStatusDiv.innerHTML = `<div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progress}%"></div></div><p class="mt-1 text-sm text-gray-500">Receiving: ${progress.toFixed(0)}%</p>`;
+                        if (fileBuffer.length * CHUNK_SIZE >= receivedFileInfo.size) {
+                            const receivedData = fileBuffer.join('');
+                            const blob = base64toBlob(receivedData, receivedFileInfo.mime);
+                            const url = URL.createObjectURL(blob);
+                            const fileItem = document.createElement('div');
+                            fileItem.className = 'flex items-center justify-between bg-gray-50 p-4 rounded-lg';
+                            fileItem.innerHTML = `
+                                <span class="text-gray-700">${receivedFileInfo.filename}</span>
+                                <a href="${url}" download="${receivedFileInfo.filename}" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600">Download</a>
+                            `;
+                            fileList.appendChild(fileItem);
+                            fileBuffer = [];
+                            receivedFileInfo = null;
+                            fileStatusDiv.innerHTML = `<p class="text-green-500 mt-2">File received successfully!</p>`;
+                            setTimeout(() => fileStatusDiv.textContent = '', 2000);
+                        }
+                    }
+                };
+            }
+            
+            sendTextBtn.onclick = () => {
+                if (dataChannel && dataChannel.readyState === 'open') {
+                    const message = { type: 'text', content: textInput.value };
+                    dataChannel.send(JSON.stringify(message));
+                    textInput.value = '';
+                    textStatus.textContent = 'Text sent!';
+                    setTimeout(() => textStatus.textContent = '', 2000);
+                } else {
+                    textStatus.textContent = 'Not connected.';
+                }
+            };
+            
+            // Drag and Drop File Logic
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+            dropArea.addEventListener('click', () => fileInput.click(), false);
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('border-indigo-500', 'bg-gray-50'), false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('border-indigo-500', 'bg-gray-50'), false);
+            });
+
+            function handleDrop(e) {
+                let dt = e.dataTransfer;
+                let files = dt.files;
+                handleFiles(files);
+            }
+
+            async function handleFiles(files) {
+                if (!dataChannel || dataChannel.readyState !== 'open') {
+                    fileStatusDiv.innerHTML = `<p class="text-red-500 mt-2">Not connected to a peer.</p>`;
+                    return;
+                }
+                const file = files[0];
+                if (!file) return;
+
+                const fileInfo = {
+                    type: 'file-info',
+                    filename: file.name,
+                    size: file.size,
+                    mime: file.type
+                };
+                dataChannel.send(JSON.stringify(fileInfo));
+
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const arrayBuffer = e.target.result;
+                    const base64String = arrayBufferToBase64(arrayBuffer);
+                    
+                    let offset = 0;
+                    while (offset < base64String.length) {
+                        const chunk = base64String.slice(offset, offset + CHUNK_SIZE);
+                        const message = { type: 'file-chunk', chunk };
+                        dataChannel.send(JSON.stringify(message));
+                        offset += CHUNK_SIZE;
+                        const progress = (offset / base64String.length) * 100;
+                        fileStatusDiv.innerHTML = `<div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progress}%"></div></div><p class="mt-1 text-sm text-gray-500">Sending: ${progress.toFixed(0)}%</p>`;
+                    }
+                    fileStatusDiv.innerHTML = `<p class="text-green-500 mt-2">File sent successfully!</p>`;
+                    setTimeout(() => fileStatusDiv.textContent = '', 2000);
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // Helper functions for file transfer
+            function arrayBufferToBase64(buffer) {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
+
+            function base64toBlob(base64, mimeType) {
+                const binary = window.atob(base64);
+                const len = binary.length;
+                const buffer = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    buffer[i] = binary.charCodeAt(i);
+                }
+                return new Blob([buffer], { type: mimeType });
+            }
+        });
+    </script>
+</body>
+</html>

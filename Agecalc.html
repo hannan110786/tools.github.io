@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Age Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+    <div class="bg-white rounded-2xl p-8 space-y-6">
+      <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+        Age Calculator
+      </h1>
+
+      <!-- Controls -->
+      <div class="space-y-4 text-center">
+        <!-- Date input -->
+        <label for="dob" class="block text-lg font-medium text-gray-800">Select Your Date of Birth:</label>
+        <input type="date" id="dob"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+
+        <!-- Button -->
+        <button id="calcBtn"
+          class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+          Calculate Age
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div id="resultContainer" class="hidden space-y-4">
+        <div class="p-4 border border-gray-300 rounded-lg bg-gray-100 text-center">
+          <p class="font-medium text-gray-800 mb-2">Your Age:</p>
+          <p id="ageResult" class="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dobInput = document.getElementById('dob');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const ageResult = document.getElementById('ageResult');
+
+    calcBtn.addEventListener('click', () => {
+      const dobValue = dobInput.value;
+      if (!dobValue) {
+        alert("Please select your Date of Birth.");
+        return;
+      }
+
+      const dob = new Date(dobValue);
+      const today = new Date();
+
+      let years = today.getFullYear() - dob.getFullYear();
+      let months = today.getMonth() - dob.getMonth();
+      let days = today.getDate() - dob.getDate();
+
+      // Adjust if birthday hasn’t occurred yet this year
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      ageResult.textContent = `${years} Years, ${months} Months, ${days} Days`;
+      resultContainer.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background Remover AI - Any Object</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.13.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0/dist/body-pix.min.js"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+  <div class="bg-white rounded-2xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+      Background Remover AI
+    </h1>
+
+    <div class="space-y-4 text-center">
+      <input type="file" id="imageInput" accept="image/*"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+
+      <button id="removeBtn" disabled
+        class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+        Remove Background
+      </button>
+
+      <a id="downloadBtn" class="hidden bg-gradient-to-r from-blue-400 to-indigo-600 hover:opacity-90 px-4 py-2 rounded-lg w-full text-center transition text-white font-semibold shadow-md" download="no-bg.png">
+        Download
+      </a>
+    </div>
+
+    <div id="previewContainer" class="hidden mt-4 text-center">
+      <p class="font-medium text-gray-800 mb-2">Preview:</p>
+      <canvas id="canvasPreview" class="mx-auto rounded-lg shadow-md max-h-64"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const imageInput = document.getElementById('imageInput');
+const removeBtn = document.getElementById('removeBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const previewContainer = document.getElementById('previewContainer');
+const canvas = document.getElementById('canvasPreview');
+const ctx = canvas.getContext('2d');
+
+let img = new Image();
+let net;
+
+async function loadModel() {
+  removeBtn.textContent = "Loading Model...";
+  removeBtn.disabled = true;
+
+  try {
+    net = await bodyPix.load({
+      architecture: 'MobileNetV1',
+      outputStride: 16,
+      multiplier: 0.75,
+      quantBytes: 2
+    });
+    
+    removeBtn.textContent = "Remove Background";
+    removeBtn.disabled = false;
+  } catch (error) {
+    console.error("Failed to load the model:", error);
+    removeBtn.textContent = "Model Load Failed. Check your internet connection.";
+  }
+}
+loadModel();
+
+imageInput.addEventListener('change', () => {
+  if (imageInput.files.length > 0) {
+    const file = imageInput.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+img.onload = () => {
+  const MAX_SIZE = 800;
+  let newWidth = img.width;
+  let newHeight = img.height;
+
+  if (newWidth > newHeight) {
+      if (newWidth > MAX_SIZE) {
+          newHeight = newHeight * (MAX_SIZE / newWidth);
+          newWidth = MAX_SIZE;
+      }
+  } else {
+      if (newHeight > MAX_SIZE) {
+          newWidth = newWidth * (MAX_SIZE / newHeight);
+          newHeight = MAX_SIZE;
+      }
+  }
+
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  ctx.drawImage(img, 0, 0, newWidth, newHeight);
+  previewContainer.classList.remove('hidden');
+}
+
+removeBtn.addEventListener('click', async () => {
+  if (!img.src || !net) {
+    alert("Please select an image and wait for the model to load.");
+    return;
+  }
+
+  removeBtn.textContent = "Processing...";
+  removeBtn.disabled = true;
+
+  try {
+    const segmentation = await net.segmentPerson(img, {
+      flipHorizontal: false,
+      internalResolution: 'high',
+      segmentationThreshold: 0.7,
+      maxDetections: 1
+    });
+
+    const outputCanvas = document.createElement('canvas');
+    outputCanvas.width = canvas.width;
+    outputCanvas.height = canvas.height;
+    const outputCtx = outputCanvas.getContext('2d');
+
+    // Draw a transparent background on the output canvas
+    outputCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+    
+    // Create the mask from the segmentation data
+    const mask = await bodyPix.toMask(segmentation);
+
+    // Apply the mask to the original image to create the final cutout
+    bodyPix.drawMask(
+      outputCanvas,
+      img,
+      mask,
+      1.0, // opacity
+      0,   // foreground color (not used)
+      false // suppress background
+    );
+
+    // Display the result on the main preview canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(outputCanvas, 0, 0);
+
+    const url = outputCanvas.toDataURL('image/png');
+    downloadBtn.href = url;
+    downloadBtn.classList.remove('hidden');
+
+    removeBtn.textContent = "Remove Background";
+    removeBtn.disabled = false;
+  } catch (error) {
+    console.error("An error occurred during segmentation:", error);
+    removeBtn.textContent = "Processing Failed. Try again.";
+    removeBtn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>

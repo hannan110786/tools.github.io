@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>World Clock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 min-h-screen flex flex-col items-center justify-center font-[Poppins]">
+
+  <!-- Page Header -->
+  <div class="text-center mb-10">
+    <h1 class="text-5xl font-extrabold bg-gradient-to-r from-purple-700 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-lg animate-pulse">
+     World Clock
+    </h1>
+    <p class="text-gray-700 mt-3 text-lg">Track live times from cities around the world</p>
+  </div>
+
+  <!-- World Clock Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-6xl px-6">
+
+    <!-- Each Card -->
+    <div class="bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">New York</div>
+      <div id="time-new-york" class="text-3xl font-bold mt-2 text-purple-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">London</div>
+      <div id="time-london" class="text-3xl font-bold mt-2 text-blue-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-pink-50 via-white to-red-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Tokyo</div>
+      <div id="time-tokyo" class="text-3xl font-bold mt-2 text-pink-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-50 via-white to-emerald-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Sydney</div>
+      <div id="time-sydney" class="text-3xl font-bold mt-2 text-green-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-yellow-50 via-white to-orange-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Paris</div>
+      <div id="time-paris" class="text-3xl font-bold mt-2 text-yellow-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Los Angeles</div>
+      <div id="time-los-angeles" class="text-3xl font-bold mt-2 text-indigo-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-pink-50 via-white to-rose-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Pakistan</div>
+      <div id="time-pakistan" class="text-3xl font-bold mt-2 text-rose-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-red-50 via-white to-pink-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">New Delhi</div>
+      <div id="time-new-delhi" class="text-3xl font-bold mt-2 text-red-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-orange-50 via-white to-amber-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Dubai</div>
+      <div id="time-dubai" class="text-3xl font-bold mt-2 text-orange-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-teal-50 via-white to-green-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Singapore</div>
+      <div id="time-singapore" class="text-3xl font-bold mt-2 text-teal-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-50 via-white to-indigo-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Toronto</div>
+      <div id="time-toronto" class="text-3xl font-bold mt-2 text-purple-700"></div>
+    </div>
+
+    <div class="bg-gradient-to-br from-yellow-50 via-white to-lime-50 rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition duration-300">
+      <div class="text-lg font-semibold text-gray-800">Berlin</div>
+      <div id="time-berlin" class="text-3xl font-bold mt-2 text-lime-700"></div>
+    </div>
+
+  </div>
+
+  <!-- Script -->
+  <script>
+    function updateClock(city, offset) {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const localTime = new Date(utc + (3600000 * offset));
+      const hours = localTime.getHours().toString().padStart(2, '0');
+      const minutes = localTime.getMinutes().toString().padStart(2, '0');
+      const seconds = localTime.getSeconds().toString().padStart(2, '0');
+      document.getElementById(`time-${city}`).textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateWorldClocks() {
+      updateClock('new-york', -4);
+      updateClock('london', 0);
+      updateClock('tokyo', 9);
+      updateClock('sydney', 10);
+      updateClock('paris', 2);
+      updateClock('los-angeles', -7);
+      updateClock('pakistan', 5);
+      updateClock('new-delhi', 5.5);
+      updateClock('dubai', 4);
+      updateClock('singapore', 8);
+      updateClock('toronto', -4);
+      updateClock('berlin', 2);
+    }
+
+    setInterval(updateWorldClocks, 1000);
+    updateWorldClocks();
+  </script>
+</body>
+</html>

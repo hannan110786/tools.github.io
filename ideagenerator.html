@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poem / Story Idea Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+  <div class="bg-white rounded-2xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+      Poem / Story Idea Generator
+    </h1>
+
+    <div class="space-y-4 text-center">
+      <button id="generateBtn"
+        class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+        Generate Idea
+      </button>
+    </div>
+
+    <div id="results" class="space-y-4 mt-4 hidden">
+      <div class="p-4 border border-gray-300 rounded-lg bg-gray-100">
+        <p class="font-medium text-gray-800 mb-2">Idea:</p>
+        <p id="idea" class="text-lg font-semibold text-gray-900"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const generateBtn = document.getElementById('generateBtn');
+const ideaEl = document.getElementById('idea');
+const results = document.getElementById('results');
+
+// Sample poem/story prompts
+const poemLines = [
+  "A whisper in the forest, where secrets hide.",
+  "The moonlight dances on the silent sea.",
+  "A broken heart learns to beat again.",
+  "Stars falling like memories in the night.",
+  "A lone traveler seeks what cannot be found.",
+];
+
+const storyPrompts = [
+  "A young hero discovers a hidden world in their backyard.",
+  "In a city where dreams are taxed, one girl fights back.",
+  "A mysterious letter changes a lonely man's life forever.",
+  "A robot learns the meaning of friendship in a post-apocalyptic world.",
+  "Two strangers meet during a storm that changes history.",
+];
+
+function randomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+generateBtn.addEventListener('click', () => {
+  const type = Math.random() < 0.5 ? 'poem' : 'story';
+  let idea;
+  if (type === 'poem') {
+    idea = randomItem(poemLines);
+  } else {
+    idea = randomItem(storyPrompts);
+  }
+
+  ideaEl.textContent = idea;
+  results.classList.remove('hidden');
+});
+</script>
+</body>
+</html>

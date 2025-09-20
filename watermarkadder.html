@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watermark Adder</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+  <div class="bg-white rounded-2xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+      Watermark Adder
+    </h1>
+
+    <div class="space-y-4 text-center">
+      <!-- Upload Image -->
+      <input type="file" id="imageInput" accept="image/*"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+
+      <!-- Watermark Type -->
+      <select id="type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none">
+        <option value="text">Text Watermark</option>
+        <option value="image">Image Watermark</option>
+      </select>
+
+      <!-- Text Watermark Input -->
+      <input type="text" id="watermarkText" placeholder="Enter watermark text"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+
+      <!-- Image Watermark Input -->
+      <input type="file" id="watermarkImage" accept="image/*"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+
+      <!-- Position -->
+      <select id="position" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none">
+        <option value="bottom-right">Bottom Right</option>
+        <option value="bottom-left">Bottom Left</option>
+        <option value="top-right">Top Right</option>
+        <option value="top-left">Top Left</option>
+        <option value="center">Center</option>
+      </select>
+
+      <button id="addBtn"
+        class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+        Add Watermark
+      </button>
+
+      <a id="downloadBtn" class="hidden bg-gradient-to-r from-blue-400 to-indigo-600 hover:opacity-90 px-4 py-2 rounded-lg w-full text-center transition text-white font-semibold shadow-md" download="watermarked.png">
+        Download Image
+      </a>
+    </div>
+
+    <div id="previewContainer" class="hidden mt-4 text-center">
+      <p class="font-medium text-gray-800 mb-2">Preview:</p>
+      <canvas id="canvasPreview" class="mx-auto rounded-lg shadow-md max-h-64"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const imageInput = document.getElementById('imageInput');
+const watermarkText = document.getElementById('watermarkText');
+const watermarkImage = document.getElementById('watermarkImage');
+const typeSelect = document.getElementById('type');
+const positionSelect = document.getElementById('position');
+const addBtn = document.getElementById('addBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const previewContainer = document.getElementById('previewContainer');
+const canvas = document.getElementById('canvasPreview');
+const ctx = canvas.getContext('2d');
+
+let img = new Image();
+let wmImg = new Image();
+
+imageInput.addEventListener('change', () => {
+  if (imageInput.files.length > 0) {
+    const file = imageInput.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+wmImg.onload = () => {
+  drawWatermark();
+};
+
+img.onload = () => {
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  previewContainer.classList.remove('hidden');
+};
+
+watermarkImage.addEventListener('change', () => {
+  if (watermarkImage.files.length > 0) {
+    const file = watermarkImage.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      wmImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+function drawWatermark() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+
+  const pos = positionSelect.value;
+  let x, y;
+
+  if (typeSelect.value === 'text') {
+    const text = watermarkText.value || "Watermark";
+    ctx.font = "48px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    ctx.textBaseline = "top";
+    const textWidth = ctx.measureText(text).width;
+    const textHeight = 48;
+
+    switch(pos) {
+      case 'bottom-right': x = canvas.width - textWidth - 10; y = canvas.height - textHeight - 10; break;
+      case 'bottom-left': x = 10; y = canvas.height - textHeight - 10; break;
+      case 'top-right': x = canvas.width - textWidth - 10; y = 10; break;
+      case 'top-left': x = 10; y = 10; break;
+      case 'center': x = (canvas.width - textWidth)/2; y = (canvas.height - textHeight)/2; break;
+    }
+
+    ctx.fillText(text, x, y);
+
+  } else if (typeSelect.value === 'image' && wmImg.src) {
+    const wmWidth = canvas.width * 0.2;
+    const wmHeight = wmImg.height * (wmWidth / wmImg.width);
+
+    switch(pos) {
+      case 'bottom-right': x = canvas.width - wmWidth - 10; y = canvas.height - wmHeight - 10; break;
+      case 'bottom-left': x = 10; y = canvas.height - wmHeight - 10; break;
+      case 'top-right': x = canvas.width - wmWidth - 10; y = 10; break;
+      case 'top-left': x = 10; y = 10; break;
+      case 'center': x = (canvas.width - wmWidth)/2; y = (canvas.height - wmHeight)/2; break;
+    }
+
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(wmImg, x, y, wmWidth, wmHeight);
+    ctx.globalAlpha = 1;
+  }
+}
+
+addBtn.addEventListener('click', () => {
+  drawWatermark();
+  downloadBtn.href = canvas.toDataURL('image/png');
+  downloadBtn.classList.remove('hidden');
+});
+</script>
+</body>
+</html>

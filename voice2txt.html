@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice to Text Extractor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12 text-center">
+    <h1 class="text-4xl font-bold">🎤 Voice to Text Extractor</h1>
+    <p class="text-lg mt-2">Click the button and start speaking. Your speech will be transcribed in real time.</p>
+  </header>
+
+  <!-- Main Section -->
+  <main class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Controls -->
+      <div class="bg-white rounded-xl shadow p-6 space-y-6 flex flex-col justify-center items-center">
+        <h2 class="text-xl font-semibold">Controls</h2>
+
+        <div class="flex space-x-4">
+          <button id="startBtn" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-white transition">Start</button>
+          <button id="stopBtn" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg text-white transition hidden">Stop</button>
+          <button id="copyBtn" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-white transition hidden">Copy</button>
+        </div>
+
+        <div id="status" class="text-yellow-500 mt-4 hidden animate-pulse">🎙️ Listening...</div>
+      </div>
+
+      <!-- Output -->
+      <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+        <h2 class="text-xl font-semibold mb-4">Transcription</h2>
+        <textarea id="outputText" rows="12" readonly class="w-full flex-1 bg-gray-100 text-gray-800 p-4 rounded-lg resize-none focus:outline-none"></textarea>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const outputText = document.getElementById("outputText");
+    const status = document.getElementById("status");
+
+    // Check browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Your browser does not support Speech Recognition. Try using Google Chrome.");
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    let finalTranscript = "";
+
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      outputText.value = finalTranscript + interimTranscript;
+      copyBtn.classList.remove("hidden");
+    };
+
+    recognition.onstart = () => {
+      status.classList.remove("hidden");
+      startBtn.classList.add("hidden");
+      stopBtn.classList.remove("hidden");
+    };
+
+    recognition.onend = () => {
+      status.classList.add("hidden");
+      startBtn.classList.remove("hidden");
+      stopBtn.classList.add("hidden");
+    };
+
+    startBtn.addEventListener("click", () => {
+      finalTranscript = "";
+      outputText.value = "";
+      recognition.start();
+    });
+
+    stopBtn.addEventListener("click", () => {
+      recognition.stop();
+    });
+
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(outputText.value);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

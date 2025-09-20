@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Maker - Toolbox</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+    .logo-preview { 
+      width: 100%; 
+      height: 250px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+    }
+    canvas { 
+      border-radius: 1rem; 
+      background: white; 
+      cursor: move; 
+      border: 2px solid black; /* 🔥 Border applied directly to canvas */
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12 text-center">
+    <h1 class="text-4xl font-bold">Logo Maker</h1>
+    <p class="text-lg mt-2">Design a logo with draggable & resizable text, and download it as PNG.</p>
+  </header>
+
+  <!-- Main Section -->
+  <main class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- Controls -->
+      <div class="bg-white rounded-xl shadow p-6 space-y-4">
+        <h2 class="text-xl font-semibold mb-4">Customize Your Logo</h2>
+        
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Logo Text</label>
+          <input id="logoText" type="text" placeholder="Enter text..." class="w-full p-2 border rounded-md">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Font Style</label>
+          <select id="fontSelect" class="w-full p-2 border rounded-md">
+            <option value="Inter">Inter</option>
+            <option value="Pacifico">Pacifico</option>
+            <option value="Roboto Slab">Roboto Slab</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Font Size</label>
+          <input id="fontSize" type="range" min="20" max="100" value="48" class="w-full">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Text Color</label>
+          <input id="textColor" type="color" value="#4f46e5" class="w-16 h-10 border rounded-md">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Background Color</label>
+          <input id="bgColor" type="color" value="#ffffff" class="w-16 h-10 border rounded-md">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Background Image</label>
+          <input id="bgImage" type="file" accept="image/*" class="w-full p-2 border rounded-md">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">Icon</label>
+          <select id="iconSelect" class="w-full p-2 border rounded-md">
+            <option value="none">None</option>
+            <option value="⭐">Star</option>
+            <option value="⚡">Lightning</option>
+            <option value="🔥">Fire</option>
+            <option value="💎">Diamond</option>
+          </select>
+        </div>
+
+        <button id="downloadBtn" class="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">Download Logo</button>
+      </div>
+
+      <!-- Preview -->
+      <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+        <h2 class="text-xl font-semibold mb-4">Preview</h2>
+        <div class="logo-preview w-full">
+          <canvas id="logoCanvas" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("logoCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const logoText = document.getElementById("logoText");
+    const fontSelect = document.getElementById("fontSelect");
+    const fontSize = document.getElementById("fontSize");
+    const textColor = document.getElementById("textColor");
+    const bgColor = document.getElementById("bgColor");
+    const bgImageInput = document.getElementById("bgImage");
+    const iconSelect = document.getElementById("iconSelect");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    let bgImage = null;
+    let textX = canvas.width / 2;
+    let textY = canvas.height / 2;
+    let dragging = false;
+
+    function drawLogo() {
+      // Background
+      if (bgImage) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = bgColor.value;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Text + Icon
+      ctx.fillStyle = textColor.value;
+      ctx.font = `bold ${fontSize.value}px ${fontSelect.value}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      let text = logoText.value || "My Logo";
+      let icon = iconSelect.value !== "none" ? iconSelect.value + " " : "";
+      ctx.fillText(icon + text, textX, textY);
+    }
+
+    // Update when controls change
+    [logoText, fontSelect, fontSize, textColor, bgColor, iconSelect].forEach(el => {
+      el.addEventListener("input", drawLogo);
+    });
+
+    // Background image upload
+    bgImageInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            bgImage = img;
+            drawLogo();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Dragging text
+    canvas.addEventListener("mousedown", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Measure text box
+      ctx.font = `bold ${fontSize.value}px ${fontSelect.value}`;
+      const text = (iconSelect.value !== "none" ? iconSelect.value + " " : "") + (logoText.value || "My Logo");
+      const textWidth = ctx.measureText(text).width;
+      const textHeight = parseInt(fontSize.value);
+
+      if (x > textX - textWidth / 2 && x < textX + textWidth / 2 &&
+          y > textY - textHeight / 2 && y < textY + textHeight / 2) {
+        dragging = true;
+      }
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (dragging) {
+        const rect = canvas.getBoundingClientRect();
+        textX = e.clientX - rect.left;
+        textY = e.clientY - rect.top;
+        drawLogo();
+      }
+    });
+
+    canvas.addEventListener("mouseup", () => dragging = false);
+    canvas.addEventListener("mouseleave", () => dragging = false);
+
+    // Download
+    downloadBtn.addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = "logo.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    drawLogo();
+  </script>
+
+</body>
+</html>

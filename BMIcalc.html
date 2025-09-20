@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BMI Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+    <div class="bg-white rounded-2xl p-8 space-y-6">
+      <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+        BMI Calculator
+      </h1>
+
+      <!-- Controls -->
+      <div class="space-y-4 text-center">
+        <!-- Weight input -->
+        <div>
+          <label for="weight" class="block text-lg font-medium text-gray-800">Weight (kg):</label>
+          <input type="number" id="weight" placeholder="Enter your weight" 
+            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+        </div>
+
+        <!-- Height input -->
+        <div>
+          <label for="height" class="block text-lg font-medium text-gray-800">Height (cm):</label>
+          <input type="number" id="height" placeholder="Enter your height" 
+            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+        </div>
+
+        <!-- Button -->
+        <button id="calcBtn"
+          class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+          Calculate BMI
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div id="resultContainer" class="hidden space-y-4">
+        <div class="p-4 border border-gray-300 rounded-lg bg-gray-100 text-center">
+          <p class="font-medium text-gray-800 mb-2">Your BMI:</p>
+          <p id="bmiResult" class="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent"></p>
+          <p id="bmiCategory" class="text-sm font-medium text-gray-700 mt-2"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const weightInput = document.getElementById('weight');
+    const heightInput = document.getElementById('height');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const bmiResult = document.getElementById('bmiResult');
+    const bmiCategory = document.getElementById('bmiCategory');
+
+    calcBtn.addEventListener('click', () => {
+      const weight = parseFloat(weightInput.value);
+      const height = parseFloat(heightInput.value) / 100; // convert cm to meters
+
+      if (!weight || !height) {
+        alert("Please enter valid weight and height.");
+        return;
+      }
+
+      const bmi = (weight / (height * height)).toFixed(1);
+
+      let category = "";
+      if (bmi < 18.5) category = "Underweight";
+      else if (bmi < 24.9) category = "Normal weight";
+      else if (bmi < 29.9) category = "Overweight";
+      else category = "Obese";
+
+      bmiResult.textContent = `${bmi}`;
+      bmiCategory.textContent = `Category: ${category}`;
+      resultContainer.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

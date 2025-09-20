@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word and Letter Counter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Word and Letter Counter</h1>
+
+    <textarea id="text-input" placeholder="Type or paste your text here..."
+      class="w-full h-48 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 text-gray-800 resize-none shadow-sm"
+      oninput="countText()"></textarea>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+      <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6 shadow-md text-center transform transition hover:-translate-y-1 hover:shadow-lg">
+        <p class="text-lg">Total Words</p>
+        <span id="word-count" class="block text-4xl font-bold mt-2">0</span>
+      </div>
+      <div class="bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl p-6 shadow-md text-center transform transition hover:-translate-y-1 hover:shadow-lg">
+        <p class="text-lg">Total Letters</p>
+        <span id="letter-count" class="block text-4xl font-bold mt-2">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function countText() {
+      const text = document.getElementById('text-input').value;
+
+      // Word count
+      const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+      document.getElementById('word-count').textContent = wordCount;
+
+      // Letter count (excluding spaces and newlines)
+      const letterCount = text.replace(/\s+/g, '').length;
+      document.getElementById('letter-count').textContent = letterCount;
+    }
+  </script>
+</body>
+</html>

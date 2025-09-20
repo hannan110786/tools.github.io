@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Percentage Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 p-1 rounded-2xl shadow-2xl">
+    <div class="bg-white rounded-2xl p-8 space-y-6">
+      <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+        Percentage Calculator
+      </h1>
+
+      <!-- Controls -->
+      <div class="space-y-4 text-center">
+        <!-- Total Marks -->
+        <div>
+          <label for="total" class="block text-lg font-medium text-gray-800">Total Marks:</label>
+          <input type="number" id="total" placeholder="Enter total marks"
+            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+        </div>
+
+        <!-- Obtained Marks -->
+        <div>
+          <label for="obtained" class="block text-lg font-medium text-gray-800">Obtained Marks:</label>
+          <input type="number" id="obtained" placeholder="Enter obtained marks"
+            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"/>
+        </div>
+
+        <!-- Button -->
+        <button id="calcBtn"
+          class="bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 px-4 py-2 rounded-lg w-full transition text-white font-semibold shadow-md">
+          Calculate Percentage
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div id="resultContainer" class="hidden space-y-4">
+        <div class="p-4 border border-gray-300 rounded-lg bg-gray-100 text-center">
+          <p class="font-medium text-gray-800 mb-2">Result:</p>
+          <p id="percentResult" class="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent"></p>
+          <p id="gradeResult" class="text-sm font-medium text-gray-700 mt-2"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const totalInput = document.getElementById('total');
+    const obtainedInput = document.getElementById('obtained');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const percentResult = document.getElementById('percentResult');
+    const gradeResult = document.getElementById('gradeResult');
+
+    calcBtn.addEventListener('click', () => {
+      const total = parseFloat(totalInput.value);
+      const obtained = parseFloat(obtainedInput.value);
+
+      if (!total || !obtained || obtained > total) {
+        alert("Please enter valid marks.");
+        return;
+      }
+
+      const percentage = ((obtained / total) * 100).toFixed(2);
+
+      let grade = "";
+      if (percentage >= 90) grade = "Grade: A+ (Excellent)";
+      else if (percentage >= 80) grade = "Grade: A";
+      else if (percentage >= 70) grade = "Grade: B";
+      else if (percentage >= 60) grade = "Grade: C";
+      else if (percentage >= 50) grade = "Grade: D";
+      else grade = "Grade: F (Fail)";
+
+      percentResult.textContent = `${percentage}%`;
+      gradeResult.textContent = grade;
+      resultContainer.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
